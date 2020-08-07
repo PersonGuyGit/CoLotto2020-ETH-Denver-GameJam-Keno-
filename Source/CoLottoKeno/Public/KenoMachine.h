@@ -12,69 +12,70 @@ class COLOTTOKENO_API AKenoMachine : public AActor
 {
 	GENERATED_BODY()
 
-
-	
-	
 public:	
 	// Sets default values for this actor's properties
 	AKenoMachine();
 
-	//IF any item(s) from BackendBingoCard[] match the contents of PlayersBingoCard[], allow the player to mark them
-	UFUNCTION(BlueprintImplementableEvent, Category = "UX")
-    void MarkADot();
-	
 	UPROPERTY(BlueprintReadOnly, Category = "Count")
 	int KenoCount;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-    TArray<UAudioComponent*> AudioLibrary;
+
+	UFUNCTION()
+	void OnPlayRound();
+
+	UFUNCTION()
+	void OnGameOver();
+
+	UFUNCTION()
+	void OnJackPot();
+
+	//Library of sounds relating to the Keno Count. Index 0 is "ONE!!!", etc.
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+    TArray<USoundBase*> AudioLibrary;
 
 	//if player's keno count equals 20
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-    UAudioComponent* Jackpot;
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+    USoundBase* JackpotSound;
 
 	//If player loses money, call this audio 
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-    UAudioComponent* GameOver;	
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+    USoundBase* GameOver;	
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-    UAudioComponent* OnButtonClicked;
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+    USoundBase* OnButtonClicked;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-    UAudioComponent* ThemeMusic;
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+    USoundBase* ThemeMusic;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-    UAudioComponent* MatchFailed;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
-    UAudioComponent* MatchSuccess;
-
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	USoundBase* TooBad;
+	
 	UPROPERTY(EditAnywhere, Category = "Credits")
 	bool CreditsOnScreen;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Keno Backend")
+	TSet<int32>PlayersKenoCard;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(BlueprintReadWrite, Category = "Keno Backend")
+    TSet<int32>CalledKenoCard;
 
-	//Marked as EDO for purposes of Debugging
-	//This int is randomized each time a new number is called by the gamemaster.
-	UPROPERTY(EditDefaultsOnly, Category = "Bingo Backend")
-    int NumberCalled;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Keno Backend")
-	TArray<int>PlayersKenoCard;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Keno Backend")
-    TArray<int>CalledKenoCard;
-	
 	UFUNCTION()
     void DrawANewCard();
 
+	int ButtonCount;
+
+	UFUNCTION(BlueprintCallable, Category = "Buttons")
+	void OnClickButton();
+
+protected:
+
 	//The total money for the player, turned into dollars with a float to avoid poor integer division
-	UPROPERTY(EditDefaultsOnly, Category = "Keno Backend")
-    int64 Cents;
+    UPROPERTY(BlueprintReadWrite, Category = "Money")
+    int cents;
 	
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 
 public:	
 	// Called every frame
